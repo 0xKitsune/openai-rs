@@ -8,7 +8,5 @@ async fn main() -> Result<(), Box<dyn Error>> {
         std::env::var("OPENAI_API_KEY").expect("Could not get api token"),
     );
 
-    let x = open_ai_client.list_models().await;
-
     Ok(())
 }
