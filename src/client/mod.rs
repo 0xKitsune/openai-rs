@@ -31,7 +31,6 @@ impl OpenAIClient {
     }
 
     pub async fn send_request<
-        'a,
         Req: OpenAIRequest + Serialize,
         Res: OpenAIResponse + DeserializeOwned,
     >(
