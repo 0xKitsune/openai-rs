@@ -1,6 +1,9 @@
 use std::error::Error;
 
-use openai::{client, completions};
+use openai::{
+    client,
+    completions::{self, CompletionRequest},
+};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {

@@ -21,10 +21,10 @@ pub struct CompletionRequest {
 }
 
 impl CompletionRequest {
-    pub fn new(model: String, prompt: String) -> Self {
+    pub fn new(model: &str, prompt: &str) -> Self {
         CompletionRequest {
-            model,
-            prompt,
+            model: model.to_owned(),
+            prompt: prompt.to_owned(),
             ..Default::default()
         }
     }
