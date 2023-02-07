@@ -1,3 +1,6 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct CompletionRequest {
     pub model: String,
     pub prompt: String,
@@ -16,6 +19,8 @@ pub struct CompletionRequest {
     pub logit_bias: Option<String>,
     pub user: Option<String>,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct CompletionResponse {
     pub model: String,
     pub prompt: String,

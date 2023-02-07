@@ -1,6 +1,8 @@
+use serde::{de::DeserializeOwned, Serialize};
+
 #[async_trait::async_trait]
 pub trait OpenAIRequest {
-    async fn send_request() {}
+    fn endpoint(&self) -> String;
 }
 
 pub trait OpenAIResponse {}
@@ -28,7 +30,21 @@ impl OpenAIClient {
         Ok(resp.json::<serde_json::Value>().await?)
     }
 
-    pub async fn request<Req: OpenAIRequest, Res: OpenAIResponse>(&self, request: Req) -> Res {}
+    pub async fn send_request<
+        'a,
+        Req: OpenAIRequest + Serialize,
+        Res: OpenAIResponse + DeserializeOwned,
+    >(
+        &self,
+        request: Req,
+    ) -> Result<Res, reqwest::Error> {
+        let request_builder = self
+            .client
+            .get(request.endpoint())
+            .bearer_auth(&self.api_key);
+
+        Ok(request_builder.send().await?.json::<Res>().await?)
+    }
 }
 
 pub struct OpenAIRequestBuilder {}
