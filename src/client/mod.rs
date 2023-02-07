@@ -1,4 +1,7 @@
-pub trait OpenAIRequest {}
+#[async_trait::async_trait]
+pub trait OpenAIRequest {
+    async fn send_request() {}
+}
 
 pub trait OpenAIResponse {}
 
@@ -24,6 +27,8 @@ impl OpenAIClient {
         let resp = request.send().await?;
         Ok(resp.json::<serde_json::Value>().await?)
     }
+
+    pub async fn request<Req: OpenAIRequest, Res: OpenAIResponse>(&self, request: Req) -> Res {}
 }
 
 pub struct OpenAIRequestBuilder {}
