@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::client::{OpenAIRequest, OpenAIResponse};
+
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct CompletionRequest {
     pub model: String,
@@ -18,6 +20,12 @@ pub struct CompletionRequest {
     pub best_of: Option<i32>,
     pub logit_bias: Option<String>,
     pub user: Option<String>,
+}
+
+impl OpenAIRequest for CompletionRequest {
+    fn endpoint(&self) -> String {
+        "https://api.openai.com/v1/completions".into()
+    }
 }
 
 impl CompletionRequest {
@@ -101,6 +109,8 @@ pub struct CompletionResponse {
     pub choices: Vec<Choice>,
     pub usage: Usage,
 }
+
+impl OpenAIResponse for CompletionResponse {}
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Choice {

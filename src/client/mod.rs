@@ -1,4 +1,13 @@
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{
+    de::{value, DeserializeOwned},
+    Serialize,
+};
+use serde_json::{json, Deserializer, Value};
+
+use crate::{
+    completions::{CompletionRequest, CompletionResponse},
+    error::OpenAIError,
+};
 
 #[async_trait::async_trait]
 pub trait OpenAIRequest {
@@ -30,19 +39,50 @@ impl OpenAIClient {
         Ok(resp.json::<serde_json::Value>().await?)
     }
 
+    pub async fn complete(
+        &self,
+        model: &str,
+        prompt: &str,
+    ) -> Result<CompletionResponse, OpenAIError> {
+        Ok(self
+            .send_request::<CompletionRequest, CompletionResponse>(CompletionRequest::new(
+                model, prompt,
+            ))
+            .await?)
+    }
+
+    pub async fn edit(&self, model: &str, prompt: &str) {}
+
     pub async fn send_request<
         Req: OpenAIRequest + Serialize,
         Res: OpenAIResponse + DeserializeOwned,
     >(
         &self,
         request: Req,
-    ) -> Result<Res, reqwest::Error> {
+    ) -> Result<Res, OpenAIError> {
         let request_builder = self
             .client
-            .get(request.endpoint())
+            .post(request.endpoint())
+            .json(&request)
             .bearer_auth(&self.api_key);
 
-        Ok(request_builder.send().await?.json::<Res>().await?)
+        let response = request_builder.send().await?.json::<Value>().await?;
+
+        if response.get("error").is_some() {
+            let err_json = json!(response);
+
+            match err_json
+                .get("type")
+                .expect("No 'type' sent with error message")
+                .to_string()
+            {
+                "billing_not_active" => return Err(OpenAIError::BillingNotActive),
+                other => return Err(OpenAIError::UnrecognizedError(other)),
+            }
+        } else {
+            //Handle the error
+            Ok(Res::deserialize(response).expect("need to handle this error"))
+        }
     }
 }
 
