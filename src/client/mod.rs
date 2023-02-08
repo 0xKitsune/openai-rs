@@ -11,7 +11,7 @@ use crate::{
 
 #[async_trait::async_trait]
 pub trait OpenAIRequest {
-    fn endpoint(&self) -> String;
+    fn endpoint(&self) -> &str;
 }
 
 pub trait OpenAIResponse {}
@@ -60,24 +60,32 @@ impl OpenAIClient {
         &self,
         request: Req,
     ) -> Result<Res, OpenAIError> {
+        let body = json!(request);
+
         let request_builder = self
             .client
             .post(request.endpoint())
-            .json(&request)
+            .json(&body)
             .bearer_auth(&self.api_key);
 
         let response = request_builder.send().await?.json::<Value>().await?;
 
         if response.get("error").is_some() {
-            let err_json = json!(response);
+            let err_json = json!(response.get("error").unwrap());
 
             match err_json
                 .get("type")
                 .expect("No 'type' sent with error message")
-                .to_string()
+                .as_str()
+                .unwrap()
             {
-                "billing_not_active" => return Err(OpenAIError::BillingNotActive),
-                other => return Err(OpenAIError::UnrecognizedError(other)),
+                "billing_not_active" => {
+                    return Err(OpenAIError::BillingNotActive(err_json.to_string()))
+                }
+                "invalid_request_error" => {
+                    return Err(OpenAIError::InvalidRequest(err_json.to_string()))
+                }
+                _ => return Err(OpenAIError::UnrecognizedError(err_json.to_string())),
             }
         } else {
             //Handle the error

@@ -4,6 +4,7 @@ use openai::{
     client,
     completions::{self, CompletionRequest, CompletionResponse},
 };
+use serde_json::json;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -13,7 +14,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let request = CompletionRequest::new("text-davinci-003", "Can you write me a poem?");
 
-    open_ai_client
+    dbg!(json!(request.clone()));
+
+    let response = open_ai_client
         .send_request::<CompletionRequest, CompletionResponse>(request)
         .await?;
 
