@@ -12,8 +12,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         std::env::var("OPENAI_API_KEY").expect("Could not get api token"),
     );
 
-    let prompt = "What is a good name for a Rust library that wraps the openai api?";
-    println!("{:?}", prompt);
+    let prompt = "Can you write me a rust program that prints hello world?";
+    println!("{}", prompt);
 
     let model = models::TEXT_DAVINCI_003;
     let response = open_ai_client.complete(&model, prompt).await?;
@@ -21,7 +21,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     println!("{} \n\n", response.choices[0].text);
 
     let prompt = "Can you write me a poem about the Rust programming language?";
-    println!("{:?}", prompt);
+    println!("{}", prompt);
 
     let request = CompletionRequest::new("text-davinci-003", prompt);
 
