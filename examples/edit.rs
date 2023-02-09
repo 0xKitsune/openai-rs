@@ -7,9 +7,8 @@ use openairs::{
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let open_ai_client = client::OpenAIClient::new(
-        std::env::var("OPENAI_API_KEY").expect("Could not get api token"),
-    );
+    let api_key = std::env::var("OPENAI_API_KEY").expect("Could not get api token");
+    let open_ai_client = client::OpenAIClient::new(api_key);
 
     //Create a new prompt
     let input = "What day of the wek is it?";
