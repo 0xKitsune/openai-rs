@@ -1,10 +1,6 @@
 use std::error::Error;
 
-use openai::{
-    client,
-    completions::{CompletionRequest, CompletionResponse},
-    models::{self},
-};
+use openai::client;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -19,7 +15,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     //use the client.create_image() method to send a prompt to the completion endpoint
     let response = open_ai_client.create_image(prompt).await?;
-    println!("{}", response.data[0].get("url").unwrap());
+    println!("{}", response.data[0].url);
 
     Ok(())
 }
