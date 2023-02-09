@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use openai::{
+use openairs::{
     client,
     completions::{CompletionRequest, CompletionResponse},
     models::{self},

@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use openai::client;
+use openairs::client;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
