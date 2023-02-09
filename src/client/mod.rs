@@ -8,7 +8,7 @@ use crate::{
     completions::{CompletionRequest, CompletionResponse},
     edits::{EditRequest, EditResponse},
     error::OpenAIError,
-    images::{CreateImageRequest, CreateImageResponse},
+    images::{CreateImageRequest, ImageResponse},
     models::{CompletionModel, EditModel},
 };
 
@@ -70,11 +70,9 @@ impl OpenAIClient {
             .await?)
     }
 
-    pub async fn create_image(&self, prompt: &str) -> Result<CreateImageResponse, OpenAIError> {
+    pub async fn create_image(&self, prompt: &str) -> Result<ImageResponse, OpenAIError> {
         Ok(self
-            .send_request::<CreateImageRequest, CreateImageResponse>(CreateImageRequest::new(
-                prompt,
-            ))
+            .send_request::<CreateImageRequest, ImageResponse>(CreateImageRequest::new(prompt))
             .await?)
     }
 
