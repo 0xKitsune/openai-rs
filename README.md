@@ -31,6 +31,10 @@ Rust wrapper for the OpenAI API.
                                  .,:cccccxXWNOoc:;,,;:lxKWW0c.                          
                                           'lkKNWWWWWWWWX0d;.                            
                                              .';::ccc:,.                                
+ ```
 
 
-                                                                                                                                                                     ```
+To run the examples, first set an environment variable called `OPENAI_API_KEY`. Then you can run any example with 
+```
+cargo run --example <example-name>
+```
