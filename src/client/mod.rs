@@ -6,8 +6,9 @@ use serde_json::{json, Deserializer, Value};
 
 use crate::{
     completions::{CompletionRequest, CompletionResponse},
+    edits::{EditRequest, EditResponse},
     error::OpenAIError,
-    models::Model,
+    models::{CompletionModel, EditModel},
 };
 
 #[async_trait::async_trait]
@@ -42,7 +43,7 @@ impl OpenAIClient {
 
     pub async fn complete(
         &self,
-        model: &Model,
+        model: &CompletionModel,
         prompt: &str,
     ) -> Result<CompletionResponse, OpenAIError> {
         //TODO: Add error handling for when the model max tokens < prompt length
@@ -54,7 +55,19 @@ impl OpenAIClient {
             .await?)
     }
 
-    pub async fn edit(&self, model: &str, prompt: &str) {}
+    pub async fn edit(
+        &self,
+        model: &EditModel,
+        input: &str,
+        instruction: &str,
+    ) -> Result<EditResponse, OpenAIError> {
+        dbg!(json!(EditRequest::new(model.name, instruction).input(input)));
+        Ok(self
+            .send_request::<EditRequest, EditResponse>(
+                EditRequest::new(model.name, instruction).input(input),
+            )
+            .await?)
+    }
 
     pub async fn send_request<
         Req: OpenAIRequest + Serialize,

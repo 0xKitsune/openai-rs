@@ -123,6 +123,7 @@ impl CompletionRequest {
 pub struct CompletionResponse {
     pub id: String,
     pub object: String,
+    pub created: usize,
     pub model: String,
     pub choices: Vec<Choice>,
     pub usage: Usage,
