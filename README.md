@@ -1,5 +1,5 @@
 # openai-rs
-Rust wrapper for the OpenAI API.
+A simple and efficient wrapper around the OpenAI API
 
 
 ```
