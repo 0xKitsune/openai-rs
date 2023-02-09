@@ -21,7 +21,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     //Create a new text-edit-001 model
     let model = models::TEXT_DAVINCI_EDIT_001;
 
-    //use the client.complete() method to send a prompt to the completion endpoint
+    //use the client.edit() method to send a prompt to the completion endpoint
     let response = open_ai_client.edit(&model, input, instruction).await?;
     println!("{}", response.choices[0].text);
 

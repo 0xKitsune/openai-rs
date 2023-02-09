@@ -8,6 +8,7 @@ use crate::{
     completions::{CompletionRequest, CompletionResponse},
     edits::{EditRequest, EditResponse},
     error::OpenAIError,
+    images::{CreateImageRequest, CreateImageResponse},
     models::{CompletionModel, EditModel},
 };
 
@@ -66,6 +67,14 @@ impl OpenAIClient {
             .send_request::<EditRequest, EditResponse>(
                 EditRequest::new(model.name, instruction).input(input),
             )
+            .await?)
+    }
+
+    pub async fn create_image(&self, prompt: &str) -> Result<CreateImageResponse, OpenAIError> {
+        Ok(self
+            .send_request::<CreateImageRequest, CreateImageResponse>(CreateImageRequest::new(
+                prompt,
+            ))
             .await?)
     }
 
