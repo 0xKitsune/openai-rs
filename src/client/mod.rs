@@ -7,6 +7,7 @@ use serde_json::{json, Deserializer, Value};
 use crate::{
     completions::{CompletionRequest, CompletionResponse},
     error::OpenAIError,
+    models::Model,
 };
 
 #[async_trait::async_trait]
@@ -41,13 +42,15 @@ impl OpenAIClient {
 
     pub async fn complete(
         &self,
-        model: &str,
+        model: &Model,
         prompt: &str,
     ) -> Result<CompletionResponse, OpenAIError> {
+        //TODO: Add error handling for when the model max tokens < prompt length
         Ok(self
-            .send_request::<CompletionRequest, CompletionResponse>(CompletionRequest::new(
-                model, prompt,
-            ))
+            .send_request::<CompletionRequest, CompletionResponse>(
+                CompletionRequest::new(model.name, prompt)
+                    .max_tokens(model.max_tokens - prompt.len()),
+            )
             .await?)
     }
 

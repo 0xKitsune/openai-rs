@@ -11,7 +11,7 @@ pub struct CompletionRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub suffix: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub max_tokens: Option<i32>,
+    pub max_tokens: Option<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub temperature: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -60,7 +60,7 @@ impl CompletionRequest {
         self
     }
 
-    pub fn max_tokens(mut self, max_tokens: i32) -> Self {
+    pub fn max_tokens(mut self, max_tokens: usize) -> Self {
         self.max_tokens = Some(max_tokens);
         self
     }
@@ -132,15 +132,15 @@ impl OpenAIResponse for CompletionResponse {}
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Choice {
-    text: String,
-    index: usize,
-    log_probs: Option<i32>,
-    finish_reason: Option<String>,
+    pub text: String,
+    pub index: usize,
+    pub log_probs: Option<i32>,
+    pub finish_reason: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Usage {
-    prompt_tokens: usize,
-    completion_tokens: usize,
-    total_tokens: usize,
+    pub prompt_tokens: usize,
+    pub completion_tokens: usize,
+    pub total_tokens: usize,
 }
