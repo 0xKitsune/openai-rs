@@ -2,7 +2,6 @@ use std::error::Error;
 
 use openairs::{
     client,
-    completions::{CompletionRequest, CompletionResponse},
     models::{self},
 };
 

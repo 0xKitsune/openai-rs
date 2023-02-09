@@ -1,8 +1,8 @@
 use serde::{
-    de::{value, DeserializeOwned},
+    de::{DeserializeOwned},
     Serialize,
 };
-use serde_json::{json, Deserializer, Value};
+use serde_json::{json, Value};
 
 use crate::{
     completions::{CompletionRequest, CompletionResponse},
@@ -39,7 +39,7 @@ impl OpenAIClient {
             .bearer_auth(&self.api_key);
 
         let resp = request.send().await?;
-        Ok(resp.json::<serde_json::Value>().await?)
+        resp.json::<serde_json::Value>().await
     }
 
     pub async fn complete(
@@ -48,12 +48,12 @@ impl OpenAIClient {
         prompt: &str,
     ) -> Result<CompletionResponse, OpenAIError> {
         //TODO: Add error handling for when the model max tokens < prompt length
-        Ok(self
+        self
             .send_request::<CompletionRequest, CompletionResponse>(
                 CompletionRequest::new(model.name, prompt)
                     .max_tokens(model.max_tokens - prompt.len()),
             )
-            .await?)
+            .await
     }
 
     pub async fn edit(
@@ -63,17 +63,17 @@ impl OpenAIClient {
         instruction: &str,
     ) -> Result<EditResponse, OpenAIError> {
         dbg!(json!(EditRequest::new(model.name, instruction).input(input)));
-        Ok(self
+        self
             .send_request::<EditRequest, EditResponse>(
                 EditRequest::new(model.name, instruction).input(input),
             )
-            .await?)
+            .await
     }
 
     pub async fn create_image(&self, prompt: &str) -> Result<ImageResponse, OpenAIError> {
-        Ok(self
+        self
             .send_request::<CreateImageRequest, ImageResponse>(CreateImageRequest::new(prompt))
-            .await?)
+            .await
     }
 
     pub async fn send_request<
@@ -103,12 +103,12 @@ impl OpenAIClient {
                 .unwrap()
             {
                 "billing_not_active" => {
-                    return Err(OpenAIError::BillingNotActive(err_json.to_string()))
+                    Err(OpenAIError::BillingNotActive(err_json.to_string()))
                 }
                 "invalid_request_error" => {
-                    return Err(OpenAIError::InvalidRequest(err_json.to_string()))
+                    Err(OpenAIError::InvalidRequest(err_json.to_string()))
                 }
-                _ => return Err(OpenAIError::UnrecognizedError(err_json.to_string())),
+                _ => Err(OpenAIError::UnrecognizedError(err_json.to_string())),
             }
         } else {
             //Handle the error
