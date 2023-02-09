@@ -9,7 +9,6 @@ use crate::{
     models::{CompletionModel, EditModel},
 };
 
-#[async_trait::async_trait]
 pub trait OpenAIRequest {
     fn endpoint(&self) -> &str;
 }
