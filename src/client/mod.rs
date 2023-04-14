@@ -56,7 +56,6 @@ impl OpenAIClient {
         input: &str,
         instruction: &str,
     ) -> Result<EditResponse, OpenAIError> {
-        dbg!(json!(EditRequest::new(model.name, instruction).input(input)));
         self.send_request::<EditRequest, EditResponse>(
             EditRequest::new(model.name, instruction).input(input),
         )
