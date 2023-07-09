@@ -10,4 +10,6 @@ pub enum OpenAIError {
     InvalidRequest(String),
     #[error("Unrecognized error")]
     UnrecognizedError(String),
+    #[error("Rate limit exceeded")]
+    RateLimitExceeded(String),
 }

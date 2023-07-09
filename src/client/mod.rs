@@ -83,8 +83,20 @@ impl OpenAIClient {
                 .as_str()
                 .unwrap()
             {
+                "null" => match err_json
+                    .get("type")
+                    .expect("No 'type' sent with error message")
+                    .as_str()
+                    .unwrap()
+                {
+                    "rate_limit_exceeded" => {
+                        Err(OpenAIError::RateLimitExceeded(err_json.to_string()))
+                    }
+                    _ => Err(OpenAIError::UnrecognizedError(err_json.to_string())),
+                },
                 "billing_not_active" => Err(OpenAIError::BillingNotActive(err_json.to_string())),
                 "invalid_request_error" => Err(OpenAIError::InvalidRequest(err_json.to_string())),
+
                 _ => Err(OpenAIError::UnrecognizedError(err_json.to_string())),
             }
         } else {
