@@ -17,7 +17,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     )];
     println!("{}", messages[0].content);
 
-    // Create a new text-davinci-003 model
+    // Create a new model
     let model = models::GPT_4;
 
     //use the client.complete() method to send a prompt to the completion endpoint

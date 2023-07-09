@@ -9,18 +9,8 @@ pub const GPT_4: Model = Model {
     max_tokens: 8192,
 };
 
-pub const GPT_4_0613: Model = Model {
-    name: "gpt-4-0613",
-    max_tokens: 8192,
-};
-
 pub const GPT_4_32K: Model = Model {
     name: "gpt-4-32k",
-    max_tokens: 32768,
-};
-
-pub const GPT_4_32K_0613: Model = Model {
-    name: "gpt-4-32k-0613",
     max_tokens: 32768,
 };
 
@@ -31,15 +21,5 @@ pub const GPT_3_5_TURBO: Model = Model {
 
 pub const GPT_3_5_TURBO_16K: Model = Model {
     name: "gpt-3.5-turbo-16k",
-    max_tokens: 16384,
-};
-
-pub const GPT_3_5_TURBO_0613: Model = Model {
-    name: "gpt-3.5-turbo-0613",
-    max_tokens: 4096,
-};
-
-pub const GPT_3_5_TURBO_16K_0613: Model = Model {
-    name: "gpt-3.5-turbo-16k-0613",
     max_tokens: 16384,
 };
