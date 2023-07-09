@@ -2,7 +2,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use serde_json::{json, Value};
 
 use crate::{
-    chat_completions::{ChatCompletionRequest, ChatCompletionResponse, Message},
+    completions::{ChatCompletionRequest, ChatCompletionResponse, Message},
     error::OpenAIError,
     images::{CreateImageRequest, ImageResponse},
     models::Model,

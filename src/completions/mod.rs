@@ -83,10 +83,14 @@ impl Message {
 
 #[derive(Default, Debug, Serialize, Clone, Deserialize)]
 pub enum Role {
+    #[serde(rename = "system")]
     #[default]
     System,
+    #[serde(rename = "user")]
     User,
+    #[serde(rename = "assistant")]
     Assistant,
+    #[serde(rename = "function")]
     Function,
 }
 
