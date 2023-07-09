@@ -1,6 +1,5 @@
+pub mod chat_completions;
 pub mod client;
-pub mod completions;
-pub mod edits;
 pub mod embeddings;
 pub mod error;
 pub mod images;

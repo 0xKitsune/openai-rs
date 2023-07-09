@@ -2,11 +2,10 @@ use serde::{de::DeserializeOwned, Serialize};
 use serde_json::{json, Value};
 
 use crate::{
-    completions::{CompletionRequest, CompletionResponse},
-    edits::{EditRequest, EditResponse},
+    chat_completions::{ChatCompletionRequest, ChatCompletionResponse, Message},
     error::OpenAIError,
     images::{CreateImageRequest, ImageResponse},
-    models::{CompletionModel, EditModel},
+    models::Model,
 };
 
 pub trait OpenAIRequest {
@@ -38,26 +37,17 @@ impl OpenAIClient {
         resp.json::<serde_json::Value>().await
     }
 
-    pub async fn complete(
+    pub async fn chat_completion(
         &self,
-        model: &CompletionModel,
-        prompt: &str,
-    ) -> Result<CompletionResponse, OpenAIError> {
-        //TODO: Add error handling for when the model max tokens < prompt length
-        self.send_request::<CompletionRequest, CompletionResponse>(
-            CompletionRequest::new(model.name, prompt).max_tokens(model.max_tokens - prompt.len()),
-        )
-        .await
-    }
+        model: &Model,
+        messages: Vec<Message>,
+    ) -> Result<ChatCompletionResponse, OpenAIError> {
+        let total_chars: usize = messages.iter().map(|m| m.content.chars().count()).sum();
 
-    pub async fn edit(
-        &self,
-        model: &EditModel,
-        input: &str,
-        instruction: &str,
-    ) -> Result<EditResponse, OpenAIError> {
-        self.send_request::<EditRequest, EditResponse>(
-            EditRequest::new(model.name, instruction).input(input),
+        //TODO: Add error handling for when the model max tokens < prompt length
+        self.send_request::<ChatCompletionRequest, ChatCompletionResponse>(
+            ChatCompletionRequest::new(model.name, messages)
+                .max_tokens(model.max_tokens - total_chars),
         )
         .await
     }

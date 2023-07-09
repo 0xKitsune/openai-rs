@@ -1,15 +1,19 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, default};
 
 use serde::{Deserialize, Serialize};
 
 use crate::client::{OpenAIRequest, OpenAIResponse};
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default)]
-pub struct CompletionRequest {
+const CHAT_COMPLETION_ENDPOINT: &str = "https://api.openai.com/v1/chat/completions";
+
+#[derive(Default, Debug, Serialize, Clone, Deserialize)]
+pub struct ChatCompletionRequest {
     pub model: String,
-    pub prompt: String,
+    pub messages: Vec<Message>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub suffix: Option<String>,
+    pub functions: Option<Function>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub function_call: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_tokens: Option<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -23,51 +27,94 @@ pub struct CompletionRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub lob_probs: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub echo: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub stop: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub presence_penalty: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub frequency_penalty: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub best_of: Option<i32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub logit_bias: Option<HashMap<String, i32>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user: Option<String>,
 }
 
-const COMPLETION_ENDPOINT: &str = "https://api.openai.com/v1/completions";
-
-impl OpenAIRequest for CompletionRequest {
-    fn endpoint(&self) -> &str {
-        COMPLETION_ENDPOINT
-    }
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub struct Function {
+    name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    parameters: Option<String>,
 }
 
-impl CompletionRequest {
-    pub fn new(model: &str, prompt: &str) -> Self {
-        CompletionRequest {
-            model: model.to_owned(),
-            prompt: prompt.to_owned(),
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+pub struct Message {
+    pub role: Role,
+    pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub function_call: Option<String>,
+}
+
+impl Message {
+    pub fn new(content: &str) -> Message {
+        Message {
+            content: content.to_owned(),
             ..Default::default()
         }
     }
 
-    pub fn suffix(mut self, suffix: String) -> Self {
-        self.suffix = Some(suffix);
+    pub fn role(mut self, role: Role) -> Message {
+        self.role = role;
         self
+    }
+
+    pub fn name(mut self, name: String) -> Message {
+        self.name = Some(name);
+        self
+    }
+
+    pub fn function_call(mut self, function_call: String) -> Message {
+        self.function_call = Some(function_call);
+        self
+    }
+}
+
+#[derive(Default, Debug, Serialize, Clone, Deserialize)]
+pub enum Role {
+    #[default]
+    System,
+    User,
+    Assistant,
+    Function,
+}
+
+impl OpenAIRequest for ChatCompletionRequest {
+    fn endpoint(&self) -> &str {
+        CHAT_COMPLETION_ENDPOINT
+    }
+}
+
+impl ChatCompletionRequest {
+    pub fn new(model: &str, messages: Vec<Message>) -> Self {
+        ChatCompletionRequest {
+            model: model.to_owned(),
+            messages,
+            ..Default::default()
+        }
     }
 
     pub fn max_tokens(mut self, max_tokens: usize) -> Self {
         self.max_tokens = Some(max_tokens);
         self
     }
+
     pub fn temperature(mut self, temperature: f64) -> Self {
         self.temperature = Some(temperature);
         self
     }
+
     pub fn top_p(mut self, top_p: f64) -> Self {
         self.top_p = Some(top_p);
         self
@@ -86,10 +133,6 @@ impl CompletionRequest {
         self
     }
 
-    pub fn echo(mut self, echo: bool) -> Self {
-        self.echo = Some(echo);
-        self
-    }
     pub fn stop(mut self, stop: bool) -> Self {
         self.stop = Some(stop);
         self
@@ -104,10 +147,6 @@ impl CompletionRequest {
         self
     }
 
-    pub fn best_of(mut self, best_of: i32) -> Self {
-        self.best_of = Some(best_of);
-        self
-    }
     pub fn logit_bias(mut self, logit_bias: HashMap<String, i32>) -> Self {
         self.logit_bias = Some(logit_bias);
         self
@@ -120,7 +159,7 @@ impl CompletionRequest {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
-pub struct CompletionResponse {
+pub struct ChatCompletionResponse {
     pub id: String,
     pub object: String,
     pub created: usize,
@@ -129,13 +168,12 @@ pub struct CompletionResponse {
     pub usage: Usage,
 }
 
-impl OpenAIResponse for CompletionResponse {}
+impl OpenAIResponse for ChatCompletionResponse {}
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Choice {
-    pub text: String,
     pub index: usize,
-    pub log_probs: Option<i32>,
+    pub message: Message,
     pub finish_reason: Option<String>,
 }
 
