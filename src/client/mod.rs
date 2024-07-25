@@ -19,6 +19,8 @@ pub struct OpenAIClient {
     api_key: String,
 }
 
+pub const MODELS_ENDPOINT: &str = "https://api.openai.com/v1/models";
+
 impl OpenAIClient {
     pub fn new(api_key: String) -> Self {
         OpenAIClient {
@@ -28,10 +30,7 @@ impl OpenAIClient {
     }
 
     pub async fn list_models(&self) -> Result<serde_json::Value, reqwest::Error> {
-        let request = self
-            .client
-            .get("https://api.openai.com/v1/models")
-            .bearer_auth(&self.api_key);
+        let request = self.client.get(MODELS_ENDPOINT).bearer_auth(&self.api_key);
 
         let resp = request.send().await?;
         resp.json::<serde_json::Value>().await

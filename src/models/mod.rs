@@ -4,6 +4,18 @@ pub struct Model {
     pub max_tokens: usize,
 }
 
+#[allow(non_upper_case_globals)]
+pub const GPT_4o: Model = Model {
+    name: "gpt-4o",
+    max_tokens: 128000,
+};
+
+#[allow(non_upper_case_globals)]
+pub const GPT_4o_Mini: Model = Model {
+    name: "gpt-4o-mini",
+    max_tokens: 128000,
+};
+
 pub const GPT_4: Model = Model {
     name: "gpt-4",
     max_tokens: 8192,
