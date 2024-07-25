@@ -187,3 +187,17 @@ pub struct Usage {
     pub completion_tokens: usize,
     pub total_tokens: usize,
 }
+
+#[macro_export]
+macro_rules! messages {
+    ($($content:expr),* $(,)?) => {{
+        let mut messages = Vec::new();
+        $(
+            messages.push(Message {
+                content: $content.to_string(),
+                ..Default::default()
+            });
+        )*
+        messages
+    }};
+}
